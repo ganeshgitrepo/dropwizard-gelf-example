@@ -193,3 +193,11 @@ logging:
 
     # The syslog facility to which statements will be sent.
     facility: local0
+
+
+gelf:
+  enabled: true
+  requestLogEnabled: true
+  #host: localhost
+  facility: dropwizard-gelf-example
+  includeFullMDC: true

@@ -7,7 +7,11 @@ import com.example.helloworld.core.Template;
 import com.example.helloworld.core.User;
 import com.example.helloworld.db.PersonDAO;
 import com.example.helloworld.health.TemplateHealthCheck;
-import com.example.helloworld.resources.*;
+import com.example.helloworld.resources.HelloWorldResource;
+import com.example.helloworld.resources.PeopleResource;
+import com.example.helloworld.resources.PersonResource;
+import com.example.helloworld.resources.ProtectedResource;
+import com.example.helloworld.resources.ViewResource;
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.assets.AssetsBundle;
 import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
@@ -17,6 +21,8 @@ import com.yammer.dropwizard.db.DatabaseConfiguration;
 import com.yammer.dropwizard.hibernate.HibernateBundle;
 import com.yammer.dropwizard.migrations.MigrationsBundle;
 import com.yammer.dropwizard.views.ViewBundle;
+import net.gini.dropwizard.gelf.bundles.GelfLoggingBundle;
+import net.gini.dropwizard.gelf.config.GelfConfiguration;
 
 public class HelloWorldService extends Service<HelloWorldConfiguration> {
     public static void main(String[] args) throws Exception {
@@ -28,6 +34,14 @@ public class HelloWorldService extends Service<HelloWorldConfiguration> {
                 @Override
                 public DatabaseConfiguration getDatabaseConfiguration(HelloWorldConfiguration configuration) {
                     return configuration.getDatabaseConfiguration();
+                }
+            };
+
+    private final GelfLoggingBundle<HelloWorldConfiguration> gelfLoggingBundle =
+            new GelfLoggingBundle<HelloWorldConfiguration>() {
+                @Override
+                public GelfConfiguration getConfiguration(HelloWorldConfiguration configuration) {
+                    return configuration.getGelfConfiguration();
                 }
             };
 
@@ -43,6 +57,7 @@ public class HelloWorldService extends Service<HelloWorldConfiguration> {
             }
         });
         bootstrap.addBundle(hibernateBundle);
+        bootstrap.addBundle(gelfLoggingBundle);
         bootstrap.addBundle(new ViewBundle());
     }
 

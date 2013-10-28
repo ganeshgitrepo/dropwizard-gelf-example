@@ -4,6 +4,7 @@ import com.example.helloworld.core.Template;
 import com.yammer.dropwizard.config.Configuration;
 import com.yammer.dropwizard.db.DatabaseConfiguration;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import net.gini.dropwizard.gelf.config.GelfConfiguration;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
@@ -20,6 +21,11 @@ public class HelloWorldConfiguration extends Configuration {
     @NotNull
     @JsonProperty("database")
     private DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
+
+    @Valid
+    @NotNull
+    @JsonProperty("gelf")
+    private GelfConfiguration gelfConfiguration = new GelfConfiguration();
 
     public String getTemplate() {
         return template;
@@ -47,5 +53,13 @@ public class HelloWorldConfiguration extends Configuration {
 
     public void setDatabaseConfiguration(DatabaseConfiguration databaseConfiguration) {
         this.databaseConfiguration = databaseConfiguration;
+    }
+
+    public GelfConfiguration getGelfConfiguration() {
+        return gelfConfiguration;
+    }
+
+    public void setGelfConfiguration(GelfConfiguration gelfConfiguration) {
+        this.gelfConfiguration = gelfConfiguration;
     }
 }
