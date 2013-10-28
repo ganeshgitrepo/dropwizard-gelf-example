@@ -23,9 +23,18 @@ import com.yammer.dropwizard.migrations.MigrationsBundle;
 import com.yammer.dropwizard.views.ViewBundle;
 import net.gini.dropwizard.gelf.bundles.GelfLoggingBundle;
 import net.gini.dropwizard.gelf.config.GelfConfiguration;
+import net.gini.dropwizard.gelf.logging.GelfBootstrap;
+import net.gini.dropwizard.gelf.logging.UncaughtExceptionHandlers;
 
 public class HelloWorldService extends Service<HelloWorldConfiguration> {
+
+    private static final String NAME = "hello-world";
+    private static final String GELF_HOST = System.getProperty("dw.gelf.host", "localhost");
+    private static final int GELF_PORT = Integer.getInteger("dw.gelf.port", 12201);
+
     public static void main(String[] args) throws Exception {
+        GelfBootstrap.bootstrap(NAME, GELF_HOST, GELF_PORT, false);
+        Thread.currentThread().setUncaughtExceptionHandler(UncaughtExceptionHandlers.systemExit());
         new HelloWorldService().run(args);
     }
 
@@ -47,7 +56,7 @@ public class HelloWorldService extends Service<HelloWorldConfiguration> {
 
     @Override
     public void initialize(Bootstrap<HelloWorldConfiguration> bootstrap) {
-        bootstrap.setName("hello-world");
+        bootstrap.setName(NAME);
         bootstrap.addCommand(new RenderCommand());
         bootstrap.addBundle(new AssetsBundle());
         bootstrap.addBundle(new MigrationsBundle<HelloWorldConfiguration>() {
@@ -67,7 +76,7 @@ public class HelloWorldService extends Service<HelloWorldConfiguration> {
         final PersonDAO dao = new PersonDAO(hibernateBundle.getSessionFactory());
 
         environment.addProvider(new BasicAuthProvider<User>(new ExampleAuthenticator(),
-                                                            "SUPER SECRET STUFF"));
+                "SUPER SECRET STUFF"));
 
         final Template template = configuration.buildTemplate();
 
